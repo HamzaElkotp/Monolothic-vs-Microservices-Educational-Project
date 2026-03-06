@@ -1,0 +1,15 @@
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+D:\SelfAcademicLearn\ProgrammingApplies\Microservices\Monolithic_Version\backend\node_modules\router\index.js:392
+      throw new TypeError('argument handler must be a function')
+            ^
+TypeError: argument handler must be a function
+    at Function.use (D:\SelfAcademicLearn\ProgrammingApplies\Microservices\Monolithic_Version\backend\node_modules\router\index.js:392:13)
+    at Function.<anonymous> (D:\SelfAcademicLearn\ProgrammingApplies\Microservices\Monolithic_Version\backend\node_modules\express\lib\application.js:222:21)
+    at Array.forEach (<anonymous>)
+    at Function.use (D:\SelfAcademicLearn\ProgrammingApplies\Microservices\Monolithic_Version\backend\node_modules\express\lib\application.js:219:7)
+    at Object.<anonymous> (D:\SelfAcademicLearn\ProgrammingApplies\Microservices\Monolithic_Version\backend\src\index.js:27:5)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Object.require.extensions.<computed> [as .js] (D:\SelfAcademicLearn\ProgrammingApplies\Microservices\Monolithic_Version\backend\node_modules\ts-node\src\index.ts:1608:43)
+    at Module.load (node:internal/modules/cjs/loader:1207:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1023:12)
