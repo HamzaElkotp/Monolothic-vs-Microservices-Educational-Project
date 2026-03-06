@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  notification-db:
+    image: postgres:15-alpine
+    container_name: notification-microservice-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: notification_db
+    ports:
+      - "5438:5432"
+    volumes:
+      - pgdata_notification:/var/lib/postgresql/data
+
+volumes:
+  pgdata_notification:

@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  email     String
+  subject   String
+  body      String
+  status    String   @default("SENT")
+  createdAt DateTime @default(now())
+}
