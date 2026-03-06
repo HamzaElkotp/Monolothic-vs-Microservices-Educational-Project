@@ -1,0 +1,159 @@
+version: '3.8'
+
+services:
+  # === DATABASES ===
+  user-db:
+    image: postgres:15-alpine
+    container_name: user-microservice-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: user_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - pgdata_user:/var/lib/postgresql/data
+
+  product-db:
+    image: postgres:15-alpine
+    container_name: product-microservice-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: product_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - pgdata_product:/var/lib/postgresql/data
+
+  cart-db:
+    image: postgres:15-alpine
+    container_name: cart-microservice-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: cart_db
+    ports:
+      - "5436:5432"
+    volumes:
+      - pgdata_cart:/var/lib/postgresql/data
+
+  order-db:
+    image: postgres:15-alpine
+    container_name: order-microservice-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order_db
+    ports:
+      - "5437:5432"
+    volumes:
+      - pgdata_order:/var/lib/postgresql/data
+
+  notification-db:
+    image: postgres:15-alpine
+    container_name: notification-microservice-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: notification_db
+    ports:
+      - "5438:5432"
+    volumes:
+      - pgdata_notification:/var/lib/postgresql/data
+
+  # === MICROSERVICES ===
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "4001:4001"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@user-db:5432/user_db?schema=public
+      - JWT_SECRET=supersecret_microservice_key
+    depends_on:
+      - user-db
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "4002:4002"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@product-db:5432/product_db?schema=public
+    depends_on:
+      - product-db
+
+  cart-service:
+    build: ./cart-service
+    container_name: cart-service
+    ports:
+      - "4003:4003"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@cart-db:5432/cart_db?schema=public
+      - JWT_SECRET=supersecret_microservice_key
+      - PRODUCT_SERVICE_URL=http://product-service:4002
+    depends_on:
+      - cart-db
+      - product-service
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "4004:4004"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@order-db:5432/order_db?schema=public
+      - JWT_SECRET=supersecret_microservice_key
+      - CART_SERVICE_URL=http://cart-service:4003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:4005
+    depends_on:
+      - order-db
+      - cart-service
+      - notification-service
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "4005:4005"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@notification-db:5432/notification_db?schema=public
+    depends_on:
+      - notification-db
+
+  # === API GATEWAY ===
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "4000:4000"
+    environment:
+      - JWT_SECRET=supersecret_microservice_key
+      - USER_SERVICE_URL=http://user-service:4001
+      - PRODUCT_SERVICE_URL=http://product-service:4002
+      - CART_SERVICE_URL=http://cart-service:4003
+      - ORDER_SERVICE_URL=http://order-service:4004
+    depends_on:
+      - user-service
+      - product-service
+      - cart-service
+      - order-service
+
+  # === FRONTEND ===
+  frontend:
+    build: ./frontend
+    container_name: frontend-microservices
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000
+    depends_on:
+      - api-gateway
+
+volumes:
+  pgdata_user:
+  pgdata_product:
+  pgdata_cart:
+  pgdata_order:
+  pgdata_notification:

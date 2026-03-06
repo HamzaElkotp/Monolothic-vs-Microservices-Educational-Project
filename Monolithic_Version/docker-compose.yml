@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: monolith-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ecommerce_monolith
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_monolith:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: monolith-backend
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./backend/.env
+    # environment:
+    #   DATABASE_URL: postgresql://postgres:postgres@postgres:5432/ecommerce_monolith?schema=public
+    #   JWT_SECRET: supersecret_monolith_key
+    #   PORT: 4000
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: monolith-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata_monolith:
