@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  order-db:
+    image: postgres:15-alpine
+    container_name: order-microservice-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order_db
+    ports:
+      - "5437:5432"
+    volumes:
+      - pgdata_order:/var/lib/postgresql/data
+
+volumes:
+  pgdata_order:
